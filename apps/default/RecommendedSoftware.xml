@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<!--
+EMET Recommended Software protections config. 
+Enables protections for minimal recommended software such as Internet Explorer, Microsof Office, Adobe Acrobat Reader and Java
+
+All applications will have the default mitigations applied to them unless specific mitigations are specified per application.
+Environment variable supported:
+- %ProgramFiles(x86)% - This maps to %ProgramFiles(x86)%. If it's not defined on the system, it will map to %ProgramFiles%.
+- %ProgramFiles% - This maps to %ProgramFiles%. If the Product's Arch property is x64, it will map to the 64 bit program files directory.
+- %Windir% - Windows directory
+- %LOCALAPPDATA% - User local data path
+- %APPDATA% - User roaming data path
+- All other environment variables
+- MinOS - when a mitigation is enabled (=true), it will be applied by default only if minimum OS version is equal or greater of the one specified
+
+Please refer to EMET User's Guide for detailed information on how to use wildcards "*" 
+-->
+
+<EMET_Standard_Rules>
+
+  <!-- Default mitigations will be applied by default to configured programs unless each program explicity enables or disables certain mitigations -->
+  <DefaultConfig>
+    <Mitigations>
+      <Mitigation Name="DEP"            Enabled="true" />
+      <Mitigation Name="SEHOP"          Enabled="true" />
+      <Mitigation Name="NullPage"       Enabled="true" />
+      <Mitigation Name="HeapSpray"      Enabled="true" />
+      <Mitigation Name="EAF"            Enabled="true" />
+      <Mitigation Name="EAF+"           Enabled="false" />
+      <Mitigation Name="MandatoryASLR"  Enabled="true" />
+      <Mitigation Name="BottomUpASLR"   Enabled="true" />
+      <Mitigation Name="LoadLib"        Enabled="true" />
+      <Mitigation Name="MemProt"        Enabled="true" />
+      <Mitigation Name="Caller"         Enabled="true" />
+      <Mitigation Name="SimExecFlow"    Enabled="true" />
+      <Mitigation Name="StackPivot"     Enabled="true" />
+      <Mitigation Name="ASR"            Enabled="false" />
+    </Mitigations>
+  </DefaultConfig>
+
+  <Settings>
+    <ExploitAction Value="StopProgram" />
+    <AdvancedSettings DeepHooks="True" AntiDetours="True" BannedFunctions="True" />
+  </Settings>
+
+  <!-- 
+  ******************************************************************************************************************
+  Suites and programs definitions
+  ******************************************************************************************************************
+  -->
+
+  <!-- ****************************************************************************************************************** -->
+  <Vendor Name="Microsoft">
+
+    <Product Name="Internet Explorer">
+      <Version Path="*\Internet Explorer\iexplore.exe">
+        <Mitigation Name="EAF+" Enabled="true">
+          <eaf_modules>mshtml.dll;flash*.ocx;jscript*.dll;vbscript.dll;vgx.dll</eaf_modules>
+        </Mitigation>
+        <Mitigation Name="ASR" Enabled="true">
+          <asr_modules>npjpi*.dll;jp2iexp.dll;vgx.dll;msxml4*.dll;wshom.ocx;scrrun.dll</asr_modules>
+          <asr_zones>1;2</asr_zones> <!-- 0 = Local; 1 = Intranet; 2 = Trusted; 3 = Internet; 4 = Untrusted; -->
+        </Mitigation>
+      </Version>
+    </Product>
+
+    <Product Name="Wordpad">
+      <Version Path="*\Windows NT\Accessories\wordpad.exe"/>
+    </Product>
+
+    <!-- Office Suites 2003,2007,2010,2013 and Office365 -->
+    <Suite Name="Office" Version="ALL">
+      <App Name="Outlook" Path="*\OFFICE1*\OUTLOOK.EXE"/>
+      <App Name="Word" Path="*\OFFICE1*\WINWORD.EXE">
+        <Mitigation Name="ASR" Enabled="true">
+          <asr_modules>flash*.ocx</asr_modules>
+        </Mitigation>
+      </App>
+      <App Name="Excel" Path="*\OFFICE1*\EXCEL.EXE">
+        <Mitigation Name="ASR" Enabled="true">
+          <asr_modules>flash*.ocx</asr_modules>
+        </Mitigation>
+      </App>
+      <App Name="Power Point" Path="*\OFFICE1*\POWERPNT.EXE">
+        <Mitigation Name="ASR" Enabled="true">
+          <asr_modules>flash*.ocx</asr_modules>
+        </Mitigation>
+      </App>
+      <App Name="Access" Path="*\OFFICE1*\MSACCESS.EXE"/>
+      <App Name="Publisher" Path="*\OFFICE1*\MSPUB.EXE"/>
+      <App Name="InfoPath" Path="*\OFFICE1*\INFOPATH.EXE"/>
+      <App Name="Visio" Path="*\OFFICE1*\VISIO.EXE"/>
+      <App Name="Visio Viewer" Path="*\OFFICE1*\VPREVIEW.EXE"/>
+      <App Name="Lync" Path="*\OFFICE1*\LYNC.EXE"/>
+      <App Name="PowerPoint Viewer" Path="*\OFFICE1*\PPTVIEW.EXE"/>
+      <App Name="Picture Manager" Path="*\OFFICE1*\OIS.EXE"/>
+    </Suite>
+
+  </Vendor>
+
+  <!-- ****************************************************************************************************************** -->
+  <Vendor Name="Adobe">
+
+    <!-- Adobe Acrobat and Acrobat Reader 8,9,10,11 -->
+    <Product Name="Acrobat Reader">
+      <Version Name="Acrobat Reader" Path="*\Adobe\Reader*\Reader\AcroRd32.exe">
+        <Mitigation Name="EAF+" Enabled="true">
+          <eaf_modules>AcroRd32.dll;Acrofx32.dll;AcroForm.api</eaf_modules>
+        </Mitigation>
+      </Version>
+    </Product>
+    <Product Name="Acrobat">
+      <Version Name="Acrobat" Path="*\Adobe\Acrobat*\Acrobat\Acrobat.exe">
+        <Mitigation Name="EAF+" Enabled="true">
+          <eaf_modules>AcroRd32.dll;Acrofx32.dll;AcroForm.api</eaf_modules>
+        </Mitigation>
+      </Version>
+    </Product>
+
+  </Vendor>
+
+  <!-- ****************************************************************************************************************** -->
+  <Vendor Name="Oracle">
+    <Suite Name="Java6">
+      <App Name="Console" Path="*\Java\jre6\bin\java.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="GUI" Path="*\Java\jre6\bin\javaw.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="Web Start" Path="*\Java\jre6\bin\javaws.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+    </Suite>
+    <Suite Name="Java7">
+      <App Name="Console" Path="*\Java\jre7\bin\java.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="GUI" Path="*\Java\jre7\bin\javaw.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="Web Start" Path="*\Java\jre7\bin\javaws.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+    </Suite>
+    <Suite Name="Java8">
+      <App Name="Console" Path="*\Java\jre1.8*\bin\java.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="GUI" Path="*\Java\jre1.8*\bin\javaw.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+      <App Name="Web Start" Path="*\Java\jre1.8*\bin\javaws.exe">
+        <Mitigation Name="HeapSpray" Enabled="false" />
+      </App>
+    </Suite>
+  </Vendor>
+
+</EMET_Standard_Rules>

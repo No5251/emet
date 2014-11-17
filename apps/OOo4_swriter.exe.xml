@@ -1,0 +1,21 @@
+<EMET Version="5.1.5426.28431">
+  <Settings />
+  <EMET_Apps>
+    <AppConfig Path="*\OpenOffice 4\program" Executable="swriter.exe">
+      <Mitigation Name="DEP" Enabled="true" />
+      <Mitigation Name="SEHOP" Enabled="true" />
+      <Mitigation Name="NullPage" Enabled="true" />
+      <Mitigation Name="HeapSpray" Enabled="true" />
+      <Mitigation Name="EAF" Enabled="true" />
+      <Mitigation Name="EAF+" Enabled="false" />
+      <Mitigation Name="MandatoryASLR" Enabled="true" />
+      <Mitigation Name="BottomUpASLR" Enabled="true" />
+      <Mitigation Name="LoadLib" Enabled="true" />
+      <Mitigation Name="MemProt" Enabled="true" />
+      <Mitigation Name="Caller" Enabled="true" />
+      <Mitigation Name="SimExecFlow" Enabled="true" />
+      <Mitigation Name="StackPivot" Enabled="true" />
+      <Mitigation Name="ASR" Enabled="false" />
+    </AppConfig>
+  </EMET_Apps>
+</EMET>
